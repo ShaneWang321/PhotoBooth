@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PhotoBooth Admin</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #fff8ed;
+      --panel: #fffefa;
+      --ink: #442d3a;
+      --muted: rgba(68, 45, 58, 0.68);
+      --berry: #c92e58;
+      --line: #f5d96a;
+      --sky: #96bfdf;
+      --mint: #a9d6b3;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 18px clamp(18px, 4vw, 34px);
+      background: rgba(255, 248, 237, 0.94);
+      border-bottom: 2px solid rgba(245, 217, 106, 0.75);
+      backdrop-filter: blur(14px);
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+    main {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: clamp(18px, 4vw, 34px);
+    }
+    button,
+    input {
+      min-height: 46px;
+      border-radius: 12px;
+      font: inherit;
+    }
+    input {
+      width: min(420px, 100%);
+      border: 2px solid rgba(201, 46, 88, 0.24);
+      background: #fff;
+      color: var(--ink);
+      padding: 0 14px;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--berry);
+      box-shadow: 0 0 0 4px rgba(201, 46, 88, 0.10);
+    }
+    button,
+    a.button {
+      border: 0;
+      background: var(--berry);
+      color: #fff;
+      cursor: pointer;
+      font-weight: 800;
+      padding: 0 16px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      border-radius: 12px;
+      white-space: nowrap;
+    }
+    button.secondary,
+    a.secondary {
+      background: #fff;
+      color: var(--ink);
+      border: 2px solid rgba(201, 46, 88, 0.24);
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .login,
+    .empty,
+    .status {
+      background: var(--panel);
+      border: 3px solid var(--line);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 14px 40px rgba(68, 45, 58, 0.12);
+    }
+    .login form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-top: 16px;
+    }
+    .hint,
+    .meta,
+    .status {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: #fff;
+      border: 2px solid rgba(68, 45, 58, 0.10);
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    article {
+      background: var(--panel);
+      border: 2px solid rgba(245, 217, 106, 0.90);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 12px 32px rgba(68, 45, 58, 0.10);
+    }
+    .preview {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background: #fff;
+      border-bottom: 2px solid rgba(245, 217, 106, 0.65);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+    .preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .placeholder {
+      color: var(--muted);
+      font-weight: 800;
+    }
+    .content {
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .id {
+      font-size: 13px;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      background: rgba(169, 214, 179, 0.30);
+      color: var(--ink);
+    }
+    .badge.video { background: rgba(150, 191, 223, 0.34); }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .actions a {
+      flex: 1;
+      min-width: 92px;
+    }
+    .hidden { display: none !important; }
+    @media (max-width: 640px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .toolbar {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>PhotoBooth Admin</h1>
+    <div class="toolbar hidden" id="toolbar">
+      <button class="secondary" type="button" id="refreshButton">重新整理</button>
+      <button class="secondary" type="button" id="logoutButton">登出</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="login" id="loginPanel">
+      <strong>管理登入</strong>
+      <p class="hint">輸入 Vercel 的 PHOTOBOOTH_UPLOAD_TOKEN。</p>
+      <form id="loginForm">
+        <input id="tokenInput" name="token" type="password" autocomplete="current-password" placeholder="Upload Token" required>
+        <button type="submit">登入</button>
+      </form>
+    </section>
+
+    <section class="hidden" id="dashboard">
+      <div class="summary">
+        <span class="pill" id="countPill">0 場次</span>
+        <span class="meta" id="updatedText"></span>
+      </div>
+      <div class="status hidden" id="statusBox"></div>
+      <div class="grid" id="sessionGrid"></div>
+    </section>
+  </main>
+
+  <script>
+    const tokenKey = "photobooth_admin_token";
+    const loginPanel = document.getElementById("loginPanel");
+    const loginForm = document.getElementById("loginForm");
+    const tokenInput = document.getElementById("tokenInput");
+    const dashboard = document.getElementById("dashboard");
+    const toolbar = document.getElementById("toolbar");
+    const refreshButton = document.getElementById("refreshButton");
+    const logoutButton = document.getElementById("logoutButton");
+    const sessionGrid = document.getElementById("sessionGrid");
+    const statusBox = document.getElementById("statusBox");
+    const countPill = document.getElementById("countPill");
+    const updatedText = document.getElementById("updatedText");
+
+    loginForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const token = tokenInput.value.trim();
+      if (!token) return;
+      sessionStorage.setItem(tokenKey, token);
+      tokenInput.value = "";
+      loadSessions();
+    });
+
+    refreshButton.addEventListener("click", () => loadSessions());
+    logoutButton.addEventListener("click", () => {
+      sessionStorage.removeItem(tokenKey);
+      showLogin();
+    });
+
+    if (sessionStorage.getItem(tokenKey)) {
+      loadSessions();
+    }
+
+    async function loadSessions() {
+      const token = sessionStorage.getItem(tokenKey);
+      if (!token) {
+        showLogin();
+        return;
+      }
+
+      showDashboard("讀取中");
+
+      try {
+        const response = await fetch("/api/admin?limit=200", {
+          headers: {
+            "authorization": `Bearer ${token}`,
+            "x-upload-token": token
+          },
+          cache: "no-store"
+        });
+
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          if (response.status === 401) {
+            sessionStorage.removeItem(tokenKey);
+            showLogin("Token 不正確，請重新登入。");
+            return;
+          }
+          throw new Error(payload.message || payload.error || `HTTP ${response.status}`);
+        }
+
+        renderSessions(payload.sessions || []);
+      } catch (error) {
+        showStatus(`讀取失敗：${error.message || error}`);
+      }
+    }
+
+    function showLogin(message = "") {
+      loginPanel.classList.remove("hidden");
+      dashboard.classList.add("hidden");
+      toolbar.classList.add("hidden");
+      sessionGrid.replaceChildren();
+      if (message) {
+        showStatus(message);
+      }
+    }
+
+    function showDashboard(message = "") {
+      loginPanel.classList.add("hidden");
+      dashboard.classList.remove("hidden");
+      toolbar.classList.remove("hidden");
+      if (message) {
+        showStatus(message);
+      } else {
+        hideStatus();
+      }
+    }
+
+    function showStatus(message) {
+      statusBox.textContent = message;
+      statusBox.classList.remove("hidden");
+    }
+
+    function hideStatus() {
+      statusBox.textContent = "";
+      statusBox.classList.add("hidden");
+    }
+
+    function renderSessions(sessions) {
+      hideStatus();
+      sessionGrid.replaceChildren();
+      countPill.textContent = `${sessions.length} 場次`;
+      updatedText.textContent = `更新時間 ${new Date().toLocaleString("zh-TW")}`;
+
+      if (!sessions.length) {
+        showStatus("目前還沒有上傳完成的拍攝資料。");
+        return;
+      }
+
+      for (const session of sessions) {
+        sessionGrid.appendChild(renderSessionCard(session));
+      }
+    }
+
+    function renderSessionCard(session) {
+      const photo = session.files?.photo;
+      const video = session.files?.video;
+      const article = document.createElement("article");
+
+      const preview = document.createElement("div");
+      preview.className = "preview";
+      if (photo?.url) {
+        const image = document.createElement("img");
+        image.src = photo.url;
+        image.alt = "PhotoBooth result";
+        image.loading = "lazy";
+        preview.appendChild(image);
+      } else {
+        const empty = document.createElement("span");
+        empty.className = "placeholder";
+        empty.textContent = "沒有照片";
+        preview.appendChild(empty);
+      }
+      article.appendChild(preview);
+
+      const content = document.createElement("div");
+      content.className = "content";
+
+      const titleRow = document.createElement("div");
+      titleRow.className = "row";
+      const time = document.createElement("strong");
+      time.textContent = formatDate(session.updatedAt || session.createdAt);
+      const id = document.createElement("span");
+      id.className = "id";
+      id.textContent = session.id;
+      titleRow.append(time, id);
+      content.appendChild(titleRow);
+
+      const badges = document.createElement("div");
+      badges.className = "badges";
+      if (photo) badges.appendChild(badge(`照片 ${formatBytes(photo.size)}`));
+      if (video) badges.appendChild(badge(`影片 ${formatBytes(video.size)}`, "video"));
+      if (!photo && !video) badges.appendChild(badge("尚無檔案"));
+      content.appendChild(badges);
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
+      actions.appendChild(linkButton("分享頁", session.shareUrl));
+      if (photo?.downloadUrl) actions.appendChild(linkButton("照片", photo.downloadUrl, true));
+      if (video?.downloadUrl) actions.appendChild(linkButton("影片", video.downloadUrl, true, "secondary"));
+      content.appendChild(actions);
+
+      article.appendChild(content);
+      return article;
+    }
+
+    function badge(text, className = "") {
+      const element = document.createElement("span");
+      element.className = `badge ${className}`.trim();
+      element.textContent = text;
+      return element;
+    }
+
+    function linkButton(text, href, download = false, extraClass = "") {
+      const link = document.createElement("a");
+      link.className = `button ${extraClass}`.trim();
+      link.textContent = text;
+      link.href = href;
+      link.target = "_blank";
+      link.rel = "noopener";
+      if (download) link.download = "";
+      return link;
+    }
+
+    function formatDate(value) {
+      if (!value) return "未知時間";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "未知時間";
+      return date.toLocaleString("zh-TW", {
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function formatBytes(bytes) {
+      const value = Number(bytes || 0);
+      if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)} MB`;
+      if (value >= 1_000) return `${Math.round(value / 1_000)} KB`;
+      return `${value} B`;
+    }
+  </script>
+</body>
+</html>

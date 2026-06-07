@@ -181,6 +181,54 @@ export async function readManifest(sessionID) {
   return response.json();
 }
 
+export async function listSessionManifests({ limit = 100, cursor } = {}) {
+  const targetCount = Math.min(Math.max(Number(limit) || 100, 1), 200);
+  const manifests = [];
+  let nextCursor = cursor || undefined;
+  let hasMore = true;
+  let pageCount = 0;
+
+  while (manifests.length < targetCount && hasMore && pageCount < 8) {
+    const result = await list({
+      prefix: "sessions/",
+      limit: Math.min(1000, Math.max(100, (targetCount - manifests.length) * 4)),
+      cursor: nextCursor
+    });
+
+    const manifestBlobs = result.blobs.filter((blob) => blob.pathname.endsWith("/manifest.json"));
+    const pageManifests = await Promise.all(
+      manifestBlobs.map(async (blob) => {
+        try {
+          const response = await fetch(blob.url, { cache: "no-store" });
+          if (!response.ok) {
+            return null;
+          }
+          return response.json();
+        } catch {
+          return null;
+        }
+      })
+    );
+
+    manifests.push(...pageManifests.filter(Boolean));
+    hasMore = Boolean(result.hasMore && result.cursor);
+    nextCursor = result.cursor;
+    pageCount += 1;
+  }
+
+  manifests.sort((a, b) => {
+    const left = Date.parse(a.updatedAt || a.createdAt || "") || 0;
+    const right = Date.parse(b.updatedAt || b.createdAt || "") || 0;
+    return right - left;
+  });
+
+  return {
+    manifests: manifests.slice(0, targetCount),
+    cursor: hasMore ? nextCursor : null,
+    hasMore
+  };
+}
+
 export async function writeManifest(manifest) {
   await put(manifestPath(manifest.id), JSON.stringify(manifest, null, 2), {
     access: "public",

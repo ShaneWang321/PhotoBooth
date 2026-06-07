@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vercel dev",
-    "check": "node --check api/_utils.js && node --check api/health.js && node --check api/upload.js && node --check api/session.js && node --check api/share.js && node --check api/qrcode.js"
+    "check": "node --check api/_utils.js && node --check api/health.js && node --check api/upload.js && node --check api/session.js && node --check api/share.js && node --check api/qrcode.js && node --check api/admin.js"
   },
   "dependencies": {
     "@vercel/blob": "^2.4.0",

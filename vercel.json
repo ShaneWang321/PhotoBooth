@@ -6,6 +6,10 @@
       "destination": "/api/health"
     },
     {
+      "source": "/admin",
+      "destination": "/admin.html"
+    },
+    {
       "source": "/s/:id",
       "destination": "/api/share?id=:id"
     },
