@@ -1,0 +1,17 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/health",
+      "destination": "/api/health"
+    },
+    {
+      "source": "/s/:id",
+      "destination": "/api/share?id=:id"
+    },
+    {
+      "source": "/qr/:id.svg",
+      "destination": "/api/qrcode?id=:id"
+    }
+  ]
+}

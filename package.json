@@ -1,0 +1,20 @@
+{
+  "name": "photobooth-qrcode-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vercel dev",
+    "check": "node --check api/_utils.js && node --check api/health.js && node --check api/upload.js && node --check api/session.js && node --check api/share.js && node --check api/qrcode.js"
+  },
+  "dependencies": {
+    "@vercel/blob": "^1.1.1",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "vercel": "^44.0.0"
+  }
+}
