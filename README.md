@@ -41,7 +41,7 @@ qrcode-backend
 ```
 
 4. 在 Vercel 專案中新增或連接 Blob Storage。
-5. 確認 Vercel 已建立 `BLOB_READ_WRITE_TOKEN`，而且套用在 Production 與 Preview。
+5. 確認 Blob Store 已連接到 Vercel Project。新版 Vercel Blob 可使用 OIDC；舊版或手動設定也可以使用 `BLOB_READ_WRITE_TOKEN`。
 6. 到 Project Settings -> Environment Variables 新增：
 
 ```text
@@ -64,13 +64,14 @@ https://你的專案.vercel.app/health
   "ok": true,
   "configuration": {
     "blobStorage": true,
+    "blobAuthMode": "oidc",
     "uploadToken": true,
     "publicBaseUrl": true
   }
 }
 ```
 
-如果 `/api/upload` 回 `blob_not_configured` 或 Vercel 顯示 `Internal Server Error`，通常是 Blob Store 尚未連接到這個 Project，或 `BLOB_READ_WRITE_TOKEN` 沒有出現在目前部署環境。
+`blobAuthMode` 可能是 `oidc` 或 `read-write-token`。如果 `/api/upload` 回 Blob 相關錯誤，通常是 Blob Store 尚未連接到這個 Project，或 `BLOB_READ_WRITE_TOKEN`/OIDC 沒有套用到目前部署環境。
 
 ## API
 

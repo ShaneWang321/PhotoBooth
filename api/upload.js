@@ -1,7 +1,6 @@
 import { put } from "@vercel/blob";
 import {
   buildShareFields,
-  isBlobStorageConfigured,
   isAuthorized,
   jsonResponse,
   methodNotAllowed,
@@ -23,7 +22,7 @@ export default {
       return jsonResponse({
         error: "upload_failed",
         message: publicErrorMessage(error),
-        hint: "請檢查 Vercel Blob Storage 與 BLOB_READ_WRITE_TOKEN 是否已在此 Project 啟用。"
+        hint: "請確認 Blob Store 已連接此 Project，或設定 BLOB_READ_WRITE_TOKEN；新建 Blob Store 也可使用 Vercel OIDC。"
       }, 500);
     }
   }
@@ -40,14 +39,6 @@ async function handleUpload(request) {
 
     if (!isAuthorized(request)) {
       return jsonResponse({ error: "unauthorized" }, 401);
-    }
-
-    if (!isBlobStorageConfigured()) {
-      return jsonResponse({
-        error: "blob_not_configured",
-        message: "Vercel Blob Storage 尚未設定或 BLOB_READ_WRITE_TOKEN 不存在。",
-        hint: "到 Vercel Project 的 Storage 建立/連接 Blob Store，並確認環境變數 BLOB_READ_WRITE_TOKEN 已存在於 Production 與 Preview。"
-      }, 500);
     }
 
     const url = new URL(request.url);

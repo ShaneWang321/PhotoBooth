@@ -11,7 +11,7 @@
     "check": "node --check api/_utils.js && node --check api/health.js && node --check api/upload.js && node --check api/session.js && node --check api/share.js && node --check api/qrcode.js"
   },
   "dependencies": {
-    "@vercel/blob": "^1.1.1",
+    "@vercel/blob": "^2.4.0",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {

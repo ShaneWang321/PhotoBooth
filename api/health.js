@@ -1,4 +1,4 @@
-import { isBlobStorageConfigured, jsonResponse, methodNotAllowed, optionsResponse } from "./_utils.js";
+import { blobAuthenticationMode, isBlobStorageConfigured, jsonResponse, methodNotAllowed, optionsResponse } from "./_utils.js";
 
 export default {
   async fetch(request) {
@@ -14,7 +14,8 @@ export default {
       ok: true,
       service: "photobooth-qrcode-backend",
       configuration: {
-        blobStorage: isBlobStorageConfigured(),
+        blobStorage: isBlobStorageConfigured(request),
+        blobAuthMode: blobAuthenticationMode(request),
         uploadToken: Boolean(process.env.PHOTOBOOTH_UPLOAD_TOKEN),
         publicBaseUrl: Boolean(process.env.PUBLIC_BASE_URL)
       },

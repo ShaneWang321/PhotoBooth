@@ -62,8 +62,20 @@ export function methodNotAllowed() {
   return jsonResponse({ error: "method_not_allowed" }, 405);
 }
 
-export function isBlobStorageConfigured() {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+export function blobAuthenticationMode(request) {
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    return "read-write-token";
+  }
+
+  if (request?.headers?.get("x-vercel-oidc-token")) {
+    return "oidc";
+  }
+
+  return "missing";
+}
+
+export function isBlobStorageConfigured(request) {
+  return blobAuthenticationMode(request) !== "missing";
 }
 
 export function isAuthorized(request) {
