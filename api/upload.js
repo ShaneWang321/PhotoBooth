@@ -1,11 +1,13 @@
 import { put } from "@vercel/blob";
 import {
   buildShareFields,
+  isBlobStorageConfigured,
   isAuthorized,
   jsonResponse,
   methodNotAllowed,
   normalizeSessionID,
   optionsResponse,
+  publicErrorMessage,
   readManifest,
   sanitizeFileName,
   uploadKinds,
@@ -14,6 +16,20 @@ import {
 
 export default {
   async fetch(request) {
+    try {
+      return await handleUpload(request);
+    } catch (error) {
+      console.error("photobooth_upload_failed", error);
+      return jsonResponse({
+        error: "upload_failed",
+        message: publicErrorMessage(error),
+        hint: "請檢查 Vercel Blob Storage 與 BLOB_READ_WRITE_TOKEN 是否已在此 Project 啟用。"
+      }, 500);
+    }
+  }
+};
+
+async function handleUpload(request) {
     if (request.method === "OPTIONS") {
       return optionsResponse();
     }
@@ -24,6 +40,14 @@ export default {
 
     if (!isAuthorized(request)) {
       return jsonResponse({ error: "unauthorized" }, 401);
+    }
+
+    if (!isBlobStorageConfigured()) {
+      return jsonResponse({
+        error: "blob_not_configured",
+        message: "Vercel Blob Storage 尚未設定或 BLOB_READ_WRITE_TOKEN 不存在。",
+        hint: "到 Vercel Project 的 Storage 建立/連接 Blob Store，並確認環境變數 BLOB_READ_WRITE_TOKEN 已存在於 Production 與 Preview。"
+      }, 500);
     }
 
     const url = new URL(request.url);
@@ -100,5 +124,4 @@ export default {
       file: responseManifest.files[kind],
       manifest: responseManifest
     }, 201);
-  }
-};
+}

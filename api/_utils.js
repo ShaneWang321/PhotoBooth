@@ -62,6 +62,10 @@ export function methodNotAllowed() {
   return jsonResponse({ error: "method_not_allowed" }, 405);
 }
 
+export function isBlobStorageConfigured() {
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+}
+
 export function isAuthorized(request) {
   const expectedToken = process.env.PHOTOBOOTH_UPLOAD_TOKEN;
   if (!expectedToken) {
@@ -75,6 +79,18 @@ export function isAuthorized(request) {
     : "";
 
   return uploadToken === expectedToken || bearerToken === expectedToken;
+}
+
+export function publicErrorMessage(error) {
+  if (!error) {
+    return "unknown_error";
+  }
+
+  if (typeof error === "string") {
+    return error;
+  }
+
+  return error.message || error.name || "unknown_error";
 }
 
 export function originFor(request) {

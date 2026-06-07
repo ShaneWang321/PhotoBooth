@@ -26,16 +26,22 @@ User
 
 ## GitHub + Vercel 部署
 
-1. 將這個 `qrcode-backend` 資料夾推到 GitHub，或保留在目前 monorepo。
+1. 將這個後端專案推到 GitHub，或保留在 iOS app 的 monorepo 裡。
 2. 到 Vercel 新增 Project，Import GitHub repo。
-3. 如果使用目前 monorepo，Vercel 的 Root Directory 設為：
+3. 如果 repo 根目錄就是這個後端專案，Vercel 的 Root Directory 使用：
+
+```text
+./
+```
+
+如果放在 iOS app monorepo 的 `qrcode-backend/` 資料夾，Root Directory 才設為：
 
 ```text
 qrcode-backend
 ```
 
-4. 在 Vercel 專案中新增 Blob Storage。
-5. 確認 Vercel 已建立 `BLOB_READ_WRITE_TOKEN`。
+4. 在 Vercel 專案中新增或連接 Blob Storage。
+5. 確認 Vercel 已建立 `BLOB_READ_WRITE_TOKEN`，而且套用在 Production 與 Preview。
 6. 到 Project Settings -> Environment Variables 新增：
 
 ```text
@@ -51,7 +57,20 @@ CORS_ORIGIN=*
 https://你的專案.vercel.app/health
 ```
 
-看到 `{"ok":true}` 就代表 API 起來了。
+看到 `{"ok":true}` 就代表 API 起來了。建議同時確認 `configuration.blobStorage` 與 `configuration.uploadToken` 都是 `true`：
+
+```json
+{
+  "ok": true,
+  "configuration": {
+    "blobStorage": true,
+    "uploadToken": true,
+    "publicBaseUrl": true
+  }
+}
+```
+
+如果 `/api/upload` 回 `blob_not_configured` 或 Vercel 顯示 `Internal Server Error`，通常是 Blob Store 尚未連接到這個 Project，或 `BLOB_READ_WRITE_TOKEN` 沒有出現在目前部署環境。
 
 ## API
 
@@ -151,7 +170,6 @@ https://你的專案.vercel.app/api/upload?kind=photo&filename=composed.jpg
 
 ## 下一步建議
 
-- 在 iOS App 加上後端網址與 token 設定。
-- 最後頁加入「產生 QR」或「掃碼下載」區塊。
-- 照片上傳成功後顯示 QR；影片若過大，改走 direct upload。
+- 倒數影片若要一起掃碼下載，改走 Vercel Blob client upload 或 S3/R2 presigned upload，避開 Function 4.5MB payload 限制。
 - 增加自動刪除策略，例如保留 7 天或 30 天。
+- 增加後台清單頁，方便活動後批次檢查、下載或刪除 session。
