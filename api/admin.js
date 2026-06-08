@@ -1,5 +1,6 @@
 import {
   buildShareFields,
+  deleteSessionBlobs,
   isAuthorized,
   jsonResponse,
   listSessionManifests,
@@ -14,12 +15,16 @@ export default {
       return optionsResponse();
     }
 
-    if (request.method !== "GET") {
+    if (!["GET", "DELETE"].includes(request.method)) {
       return methodNotAllowed();
     }
 
     if (!isAuthorized(request)) {
       return jsonResponse({ error: "unauthorized" }, 401);
+    }
+
+    if (request.method === "DELETE") {
+      return deleteSession(request);
     }
 
     try {
@@ -45,6 +50,35 @@ export default {
     }
   }
 };
+
+async function deleteSession(request) {
+  const url = new URL(request.url);
+  const id = url.searchParams.get("id") || "";
+
+  try {
+    const result = await deleteSessionBlobs(id);
+
+    if (!result.deleted) {
+      return jsonResponse({ error: "not_found" }, 404);
+    }
+
+    return jsonResponse({
+      ok: true,
+      id,
+      deletedCount: result.paths.length
+    });
+  } catch (error) {
+    if (error?.message === "invalid_session_id") {
+      return jsonResponse({ error: "invalid_session_id" }, 400);
+    }
+
+    console.error("photobooth_admin_delete_failed", error);
+    return jsonResponse({
+      error: "admin_delete_failed",
+      message: publicErrorMessage(error)
+    }, 500);
+  }
+}
 
 function serializeSession(manifest) {
   return {

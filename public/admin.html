@@ -88,6 +88,13 @@
       color: var(--ink);
       border: 2px solid rgba(201, 46, 88, 0.24);
     }
+    button.danger {
+      background: #8c1d40;
+    }
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.62;
+    }
     .toolbar {
       display: flex;
       flex-wrap: wrap;
@@ -207,7 +214,8 @@
       flex-wrap: wrap;
       gap: 8px;
     }
-    .actions a {
+    .actions a,
+    .actions button {
       flex: 1;
       min-width: 92px;
     }
@@ -295,10 +303,7 @@
 
       try {
         const response = await fetch("/api/admin?limit=200", {
-          headers: {
-            "authorization": `Bearer ${token}`,
-            "x-upload-token": token
-          },
+          headers: authHeaders(token),
           cache: "no-store"
         });
 
@@ -411,6 +416,7 @@
       actions.appendChild(linkButton("分享頁", session.shareUrl));
       if (photo?.downloadUrl) actions.appendChild(linkButton("照片", photo.downloadUrl, true));
       if (video?.downloadUrl) actions.appendChild(linkButton("影片", video.downloadUrl, true, "secondary"));
+      actions.appendChild(deleteButton(session));
       content.appendChild(actions);
 
       article.appendChild(content);
@@ -433,6 +439,63 @@
       link.rel = "noopener";
       if (download) link.download = "";
       return link;
+    }
+
+    function deleteButton(session) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "danger";
+      button.textContent = "刪除";
+      button.addEventListener("click", () => deleteSession(session, button));
+      return button;
+    }
+
+    async function deleteSession(session, button) {
+      if (!confirm("確定刪除這筆拍攝資料？")) {
+        return;
+      }
+
+      const token = sessionStorage.getItem(tokenKey);
+      if (!token) {
+        showLogin();
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "刪除中";
+
+      try {
+        const response = await fetch(`/api/admin?id=${encodeURIComponent(session.id)}`, {
+          method: "DELETE",
+          headers: authHeaders(token),
+          cache: "no-store"
+        });
+        const payload = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            sessionStorage.removeItem(tokenKey);
+            showLogin("Token 不正確，請重新登入。");
+            return;
+          }
+
+          throw new Error(payload.message || payload.error || `HTTP ${response.status}`);
+        }
+
+        showStatus("已刪除。");
+        await loadSessions();
+      } catch (error) {
+        button.disabled = false;
+        button.textContent = "刪除";
+        showStatus(`刪除失敗：${error.message || error}`);
+      }
+    }
+
+    function authHeaders(token) {
+      return {
+        "authorization": `Bearer ${token}`,
+        "x-upload-token": token
+      };
     }
 
     function formatDate(value) {

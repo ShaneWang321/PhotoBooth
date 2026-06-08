@@ -1,4 +1,4 @@
-import { list, put } from "@vercel/blob";
+import { del, list, put } from "@vercel/blob";
 
 const sessionIDPattern = /^[A-Za-z0-9_-]{8,80}$/;
 
@@ -25,7 +25,7 @@ export const uploadKinds = {
 export function corsHeaders() {
   return {
     "access-control-allow-origin": process.env.CORS_ORIGIN || "*",
-    "access-control-allow-methods": "GET,POST,OPTIONS",
+    "access-control-allow-methods": "GET,POST,DELETE,OPTIONS",
     "access-control-allow-headers": "content-type,authorization,x-upload-token"
   };
 }
@@ -226,6 +226,30 @@ export async function listSessionManifests({ limit = 100, cursor } = {}) {
     manifests: manifests.slice(0, targetCount),
     cursor: hasMore ? nextCursor : null,
     hasMore
+  };
+}
+
+export async function deleteSessionBlobs(sessionID) {
+  validateSessionID(sessionID);
+
+  const result = await list({
+    prefix: `sessions/${sessionID}/`,
+    limit: 1000
+  });
+  const paths = result.blobs.map((blob) => blob.pathname);
+
+  if (!paths.length) {
+    return {
+      deleted: false,
+      paths: []
+    };
+  }
+
+  await del(paths);
+
+  return {
+    deleted: true,
+    paths
   };
 }
 
