@@ -109,7 +109,7 @@
       flex-wrap: wrap;
       gap: 12px;
       align-items: center;
-      margin-top: 16px;
+      margin-top: 0;
     }
     .hint,
     .meta,
@@ -235,10 +235,8 @@
 
   <main>
     <section class="login" id="loginPanel">
-      <strong>管理登入</strong>
-      <p class="hint">輸入 Vercel 的 PHOTOBOOTH_UPLOAD_TOKEN。</p>
       <form id="loginForm">
-        <input id="tokenInput" name="token" type="password" autocomplete="current-password" placeholder="Upload Token" required>
+        <input id="tokenInput" name="token" type="password" autocomplete="current-password" placeholder="Token" aria-label="Upload token" required>
         <button type="submit">登入</button>
       </form>
     </section>
