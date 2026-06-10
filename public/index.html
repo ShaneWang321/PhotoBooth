@@ -3,57 +3,194 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PhotoBooth QR Backend</title>
+  <title>PhotoBooth</title>
+  <meta name="description" content="PhotoBooth 提供拍貼成品上傳、分享連結與 QR Code 下載體驗。">
   <style>
+    :root {
+      color-scheme: light;
+      --paper: #fff8ed;
+      --panel: #fffefa;
+      --ink: #442d3a;
+      --muted: rgba(68, 45, 58, 0.72);
+      --berry: #c92e58;
+      --line: #f5d96a;
+      --sky: #96bfdf;
+    }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
-      display: grid;
-      place-items: center;
-      background: #fff8ed;
-      color: #442d3a;
+      background:
+        radial-gradient(circle at top right, rgba(150, 191, 223, 0.30), transparent 28%),
+        linear-gradient(180deg, #fff8ed 0%, #fff2df 100%);
+      color: var(--ink);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       padding: 24px;
     }
-    main {
-      width: min(640px, 100%);
-      background: #fffefa;
-      border: 3px solid #f5d96a;
-      border-radius: 24px;
-      padding: 32px;
-      box-shadow: 0 16px 50px rgba(68, 45, 58, 0.16);
+    .shell {
+      width: min(1040px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 20px;
     }
-    h1 { margin: 0 0 10px; font-size: 40px; line-height: 1; letter-spacing: 0; }
-    p { margin: 0; line-height: 1.6; }
-    .links {
+    .hero,
+    .section {
+      background: var(--panel);
+      border: 3px solid var(--line);
+      border-radius: 28px;
+      box-shadow: 0 18px 50px rgba(68, 45, 58, 0.12);
+    }
+    .hero {
+      padding: clamp(28px, 5vw, 56px);
+      display: grid;
+      gap: 24px;
+    }
+    .tag {
+      display: inline-flex;
+      width: fit-content;
+      min-height: 34px;
+      align-items: center;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: rgba(201, 46, 88, 0.10);
+      color: var(--berry);
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(42px, 7vw, 72px);
+      line-height: 0.96;
+      letter-spacing: -0.04em;
+    }
+    .lead {
+      margin: 0;
+      max-width: 700px;
+      font-size: clamp(18px, 2.6vw, 22px);
+      line-height: 1.7;
+      color: var(--muted);
+    }
+    .actions,
+    .quick-links,
+    .cards {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
-      margin-top: 18px;
     }
-    code,
-    a {
+    .button,
+    .chip {
       display: inline-flex;
-      min-height: 42px;
       align-items: center;
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: #fff;
-      border: 1px solid rgba(201, 46, 88, 0.22);
-      color: #442d3a;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 16px;
+      border-radius: 14px;
+      font-weight: 800;
       text-decoration: none;
-      font-weight: 700;
+    }
+    .button.primary {
+      background: var(--berry);
+      color: #fff;
+    }
+    .button.secondary,
+    .chip {
+      background: #fff;
+      color: var(--ink);
+      border: 2px solid rgba(201, 46, 88, 0.18);
+    }
+    .section {
+      padding: 24px;
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 24px;
+    }
+    p,
+    li {
+      line-height: 1.7;
+      color: var(--muted);
+    }
+    ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .card {
+      background: #fff;
+      border: 2px solid rgba(245, 217, 106, 0.72);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+    footer {
+      padding: 2px 6px 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    @media (max-width: 640px) {
+      body { padding: 16px; }
+      .hero,
+      .section { border-radius: 22px; }
     }
   </style>
 </head>
 <body>
-  <main>
-    <h1>PhotoBooth QR Backend</h1>
-    <p>這個服務負責接收拍貼成品、保存到 Vercel Blob，並回傳可掃描的分享連結與 QR SVG。</p>
-    <div class="links">
-      <code>GET /health</code>
-      <a href="/admin">管理後台</a>
-    </div>
-  </main>
+  <div class="shell">
+    <main class="hero">
+      <span class="tag">PhotoBooth</span>
+      <div>
+        <h1>拍完就能分享</h1>
+        <p class="lead">PhotoBooth 協助活動現場上傳拍貼成品、建立分享連結，並提供 QR Code 讓使用者立即開啟與下載照片或影片。</p>
+      </div>
+      <div class="actions">
+        <a class="button primary" href="/support">Support URL</a>
+        <a class="button secondary" href="/privacy">Privacy Policy</a>
+        <a class="button secondary" href="/admin">管理後台</a>
+      </div>
+      <div class="quick-links">
+        <span class="chip">首頁 URL: /</span>
+        <span class="chip">支援 URL: /support</span>
+        <span class="chip">隱私權政策 URL: /privacy</span>
+      </div>
+    </main>
+
+    <section class="section">
+      <h2>服務內容</h2>
+      <div class="cards">
+        <article class="card">
+          <strong>活動成品上傳</strong>
+          <p>現場拍攝完成後，可將照片或影片送往後端保存並建立分享資料。</p>
+        </article>
+        <article class="card">
+          <strong>QR Code 分享</strong>
+          <p>系統會產生可掃描的分享 URL，讓使用者快速在手機上開啟作品頁。</p>
+        </article>
+        <article class="card">
+          <strong>下載與管理</strong>
+          <p>使用者可下載自己的成品，管理者也可在後台查看與整理場次資料。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>公開頁面</h2>
+      <ul>
+        <li><a href="/support">/support</a>：提供支援說明、常見問題與聯絡方向。</li>
+        <li><a href="/privacy">/privacy</a>：說明蒐集資料範圍、用途、保存與刪除方式。</li>
+        <li><a href="/health">/health</a>：檢查服務是否正常運作。</li>
+      </ul>
+    </section>
+
+    <footer>這個封面頁可直接作為對外產品介紹頁，也可用於 App Store Connect 的網站入口。</footer>
+  </div>
 </body>
 </html>

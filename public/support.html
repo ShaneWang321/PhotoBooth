@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PhotoBooth Support</title>
+  <meta name="description" content="PhotoBooth 支援頁面，提供服務說明、使用方式與聯絡資訊。">
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #fff8ed;
+      --panel: #fffefa;
+      --ink: #442d3a;
+      --muted: rgba(68, 45, 58, 0.72);
+      --berry: #c92e58;
+      --line: #f5d96a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #fff8ed 0%, #fff3e2 100%);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding: 24px;
+    }
+    .shell {
+      width: min(860px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 18px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 3px solid var(--line);
+      border-radius: 24px;
+      padding: clamp(22px, 4vw, 34px);
+      box-shadow: 0 16px 46px rgba(68, 45, 58, 0.12);
+    }
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .nav a,
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 12px;
+      font-weight: 800;
+      text-decoration: none;
+      background: #fff;
+      color: var(--ink);
+      border: 2px solid rgba(201, 46, 88, 0.18);
+    }
+    h1, h2 {
+      margin: 0 0 12px;
+    }
+    h1 {
+      font-size: clamp(34px, 6vw, 52px);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    p,
+    li {
+      margin: 0;
+      line-height: 1.75;
+      color: var(--muted);
+    }
+    ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+    .callout {
+      border-radius: 18px;
+      background: rgba(201, 46, 88, 0.06);
+      padding: 16px;
+    }
+    .embed-wrap {
+      overflow: hidden;
+      border-radius: 18px;
+      border: 2px solid rgba(201, 46, 88, 0.14);
+      background: #fff;
+    }
+    iframe {
+      display: block;
+      width: 100%;
+      min-height: 980px;
+      border: 0;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: var(--ink);
+      font-weight: 700;
+    }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    @media (max-width: 640px) {
+      body { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="nav">
+      <a href="/">首頁</a>
+      <a href="/privacy">隱私權政策</a>
+      <a href="/admin">管理後台</a>
+    </div>
+
+    <main class="panel stack">
+      <div>
+        <h1>PhotoBooth Support</h1>
+        <p>這個頁面可作為 App 的 Support URL，提供使用者了解 PhotoBooth 的使用方式、支援方向與問題回報方式。</p>
+      </div>
+
+      <section class="stack">
+        <h2>服務說明</h2>
+        <p>PhotoBooth 用於活動或拍貼場景，讓拍攝完成的照片或影片可以快速上傳、產生分享頁，並透過 QR Code 讓使用者在手機上開啟與下載。</p>
+      </section>
+
+      <section class="stack">
+        <h2>常見問題</h2>
+        <ul>
+          <li>掃描 QR Code 後無法開啟頁面：請確認網路連線正常，或重新掃描一次。</li>
+          <li>照片或影片無法下載：請稍後重新整理分享頁，或改用不同瀏覽器開啟。</li>
+          <li>找不到拍攝結果：請向現場工作人員確認拍攝是否完成上傳。</li>
+        </ul>
+      </section>
+
+      <section class="stack">
+        <h2>聯絡與回報</h2>
+        <div class="callout">
+          <p>可直接填寫下列表單聯絡我們；若你的裝置無法顯示內嵌內容，也可以<a href="https://forms.gle/sZtcMXgNbY3M2BVV7" target="_blank" rel="noopener">點這裡開啟表單</a>。</p>
+        </div>
+        <div class="embed-wrap">
+          <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeEaORMhkJgJSyrMOIUSy3yTdEyKWiQuCIDIkKBxKyg_OLJdA/viewform?embedded=true" title="PhotoBooth Support Form" loading="lazy">載入中…</iframe>
+        </div>
+        <p>目前預設說明為：若你是在活動現場使用 PhotoBooth，請優先聯繫現場主辦單位或提供此拍貼服務的工作人員。</p>
+      </section>
+    </main>
+
+    <footer>Support URL 建議使用目前頁面網址，例如 <code>/support</code>。</footer>
+  </div>
+</body>
+</html>
